@@ -172,17 +172,24 @@ while True:
             bird_surface, bird_rect = bird_animation()
 
     screen.blit(bg_surface, (0, 0))
-
+# VIEW F1
     if game_active:
         # Bird
+        ##
         bird_movement += gravity
         rotated_bird = rotate_bird(bird_surface)
         bird_rect.centery += bird_movement
+        ##
+
         screen.blit(rotated_bird, bird_rect)
+
+        ##
         game_active = check_collision(pipe_list)
 
         # Pipes
         pipe_list = move_pipes(pipe_list)
+        ##
+
         draw_pipes(pipe_list)
 
         # Score

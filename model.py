@@ -21,7 +21,14 @@ class Model:
             Model.__instance = self
 
     def init(self):
-        pygame.init()
+        self.game_over_played = False
+        self.score_played = True
+        self.event_type = 0
+        self.screen = pygame.display.set_mode((576, 1024))
+        self.bird_movement = 0
+        self.gravity = 0.15
+        self.score = 0
+        self.high_score = 0
         self.can_score = True
         self.game_active = True
         self.clock = pygame.time.Clock()
@@ -81,15 +88,25 @@ class Model:
 
     def gameStep(self):
         if self.game_active:
+            self.game_over_played = False
             self.bird_movement = 0
             self.bird_movement -= 8
-        # flap_sound.play()
+            # self.flap_sound.play()
         else:
+           # self.game_over_played = True
             self.game_active = True
             self.pipe_list.clear()
             self.bird_rect.center = (100, 512)
             self.bird_movement = 0
             self.score = 0
+
+    def get_death_sound(self):
+        self.game_over_played = True
+        return self.death_sound
+
+    def get_score_played(self):
+        self.score_played = True
+        return self.score_sound
 
     def extendPipes(self):
         self.pipe_list.extend(self.create_pipe())
@@ -134,6 +151,9 @@ class Model:
         new_bird = pygame.transform.rotozoom(bird, -self.bird_movement * 3, 1)
         return new_bird
 
+    def set_current_event(self, _event_type):
+        self.event_type = _event_type
+
     def check_collision(self, pipes):
         for pipe in pipes:
             if self.bird_rect.colliderect(pipe):
@@ -163,9 +183,10 @@ class Model:
 
         if self.pipe_list:
             for pipe in self.pipe_list:
-                if 95 < pipe.centerx < 105 and can_score:
-                    score += 1
+                if 95 < pipe.centerx < 105 and self.can_score:
+                    self.score += 1
                     # score_sound.play()
-                    can_score = False
+                    self.can_score = False
+                    self.score_played = False
                 if pipe.centerx < 0:
-                    can_score = True
+                    self.can_score = True
